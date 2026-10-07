@@ -9,7 +9,7 @@ const slides = [
     badge: "Certified Engineering",
     description: "End-to-end network deployment, structured cabling, and high-capacity optical fibre engineered for secure corporate operations.",
     primaryCta: "Request Infrastructure Quote",
-    primaryLink: "/quote",
+    primaryLink: "/contact",
     secondaryCta: "Explore Solutions",
     secondaryLink: "/services",
     icon: Server,
@@ -22,16 +22,16 @@ const slides = [
     primaryCta: "Browse Hardware Catalog",
     primaryLink: "/hardware",
     secondaryCta: "Request Volume Pricing",
-    secondaryLink: "/quote",
+    secondaryLink: "/contact",
     icon: Monitor,
-    bgImage: "/images/hero/workstations.jpg"
+    bgImage: "/images/hero/workstations3.jpg"
   },
   {
     title: "Intelligent CCTV & Enterprise Physical Security",
     badge: "Surveillance & Access Control",
     description: "Enterprise-grade IP surveillance, biometric access control, and 24/7 monitoring systems safeguarding corporate premises.",
     primaryCta: "Consult a Security Specialist",
-    primaryLink: "/quote",
+    primaryLink: "/contact",
     secondaryCta: "View CCTV Systems",
     secondaryLink: "/hardware",
     icon: ShieldCheck,

@@ -1,37 +1,18 @@
 <script setup>
 import { Link } from '@inertiajs/vue3';
-import { Network, ShieldCheck, PhoneCall, Wrench, ArrowRight } from 'lucide-vue-next';
+import { ArrowRight } from 'lucide-vue-next';
+import * as icons from 'lucide-vue-next';
 
-const services = [
-  {
-    icon: Network,
-    title: 'Structured Cabling & Fiber Optics',
-    tagline: 'High-Speed Enterprise Backbones',
-    description: 'Cat6/6A copper infrastructure, optical fibre trunking, server rack cleanups, and patch panel terminations tested to Fluke enterprise standards.',
-    highlights: ['Multi-floor corporate backbones', 'Fibre splicing & OTDR testing', 'Rack cable management & labeling']
-  },
-  {
-    icon: ShieldCheck,
-    title: 'Cybersecurity & Perimeter Defense',
-    tagline: 'Enterprise Threat Mitigation',
-    description: 'Next-generation Fortinet and Cisco firewall deployments, site-to-site VPN tunneling, intrusion prevention, and endpoint security compliance.',
-    highlights: ['Next-Gen firewall configuration', 'Zero Trust access controls', 'Vulnerability audits & mitigation']
-  },
-  {
-    icon: PhoneCall,
-    title: 'PABX & IP Unified Communications',
-    tagline: 'Modern Corporate Telephony',
-    description: 'Modern IP-PBX systems, VoIP SIP trunks, multi-office interbranch calling, and integrated boardroom video conferencing solutions.',
-    highlights: ['Hybrid on-prem & cloud PBX', 'Boardroom conferencing AV', 'Interactive IVR & call routing']
-  },
-  {
-    icon: Wrench,
-    title: 'SLA Support & IT Maintenance Contracts',
-    tagline: 'Guaranteed Operational Uptime',
-    description: 'Preventive and scheduled maintenance agreements ensuring minimal system downtime, rapid hardware replacement, and emergency engineer dispatch.',
-    highlights: ['Strict SLA response timelines', 'Scheduled preventive checkups', 'Emergency on-site troubleshooting']
+defineProps({
+  services: {
+    type: Array,
+    required: true
   }
-];
+});
+
+const resolveIcon = (iconName) => {
+  return icons[iconName] || icons.Wrench;
+};
 </script>
 
 <template>
@@ -70,7 +51,7 @@ const services = [
         >
           <div>
             <div class="w-12 h-12 rounded-xl bg-white border border-slate-200 text-brand-indigo flex items-center justify-center mb-6 group-hover:bg-brand-indigo group-hover:text-white group-hover:border-brand-indigo transition-all duration-300 shadow-xs">
-              <component :is="service.icon" class="w-6 h-6" />
+              <component :is="resolveIcon(service.icon)" class="w-6 h-6" />
             </div>
 
             <h3 class="text-lg font-bold text-brand-navy group-hover:text-brand-indigo transition-colors leading-snug">
@@ -95,7 +76,7 @@ const services = [
           <!-- Bottom Action -->
           <div class="pt-4 border-t border-slate-200/80 mt-auto">
             <Link 
-              href="/quote" 
+              href="/contact" 
               class="inline-flex items-center gap-1.5 text-xs font-bold text-brand-indigo hover:text-brand-hover group/link"
             >
               <span>Consult an Engineer</span>

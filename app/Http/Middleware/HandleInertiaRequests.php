@@ -34,6 +34,14 @@ class HandleInertiaRequests extends Middleware
             'auth' => [
                 'user' => $request->user(),
             ],
+            'globalSettings' => \App\Models\Setting::pluck('value', 'key')->toArray(),
+            'pendingQuotesCount' => \App\Models\QuoteRequest::where('status', 'pending')->count(),
+            'pendingInquiriesCount' => \App\Models\Inquiry::where('status', 'new')->count(),
+            'flash' => [
+                'success' => $request->session()->get('success'),
+                'error' => $request->session()->get('error'),
+                'message' => $request->session()->get('message'),
+            ],
         ];
     }
 }

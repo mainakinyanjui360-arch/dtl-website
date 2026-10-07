@@ -1,20 +1,40 @@
 <script setup>
-import { reactive, ref } from 'vue';
+import { ref, onMounted } from 'vue';
+import { useForm } from '@inertiajs/vue3';
 import { Send, CheckCircle2 } from 'lucide-vue-next';
 
-const form = reactive({
-  scope: 'hardware',
-  scale: 'mid',
+const num1 = ref(Math.floor(Math.random() * 10) + 1);
+const num2 = ref(Math.floor(Math.random() * 10) + 1);
+
+const form = useForm({
+  name: '',
+  email: '',
+  phone: '',
   company: '',
-  contact: '',
-  details: ''
+  service: 'Hardware Procurement',
+  message: '',
+  captcha_answer: '',
+  captcha_expected: num1.value + num2.value
 });
 
 const isSubmitted = ref(false);
 
 const submitEstimate = () => {
-  // Can be tied directly to a Laravel Inertia form helper or standard POST
-  isSubmitted.value = true;
+  form.captcha_expected = num1.value + num2.value;
+  form.post(route('quote-requests.store'), {
+    preserveScroll: true,
+    onSuccess: () => {
+      isSubmitted.value = true;
+      form.reset();
+    },
+    onError: () => {
+      // Regenerate captcha on failure
+      num1.value = Math.floor(Math.random() * 10) + 1;
+      num2.value = Math.floor(Math.random() * 10) + 1;
+      form.captcha_expected = num1.value + num2.value;
+      form.captcha_answer = '';
+    }
+  });
 };
 </script>
 
@@ -52,7 +72,7 @@ const submitEstimate = () => {
           </div>
 
           <div class="mt-12 pt-8 border-t border-slate-800 text-xs text-slate-400">
-            Direct Corporate Desk: <strong class="text-white">+254 723 788354</strong> • info@dignityafrica.co.ke
+            Direct Corporate Desk: <strong class="text-white">{{ $page.props.globalSettings?.contact_phone || '+254 723 788354' }}</strong> • {{ $page.props.globalSettings?.contact_email || 'info@dignityafrica.co.ke' }}
           </div>
         </div>
 
@@ -75,112 +95,117 @@ const submitEstimate = () => {
               <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5 text-xs font-medium">
                 <button
                   type="button"
-                  @click="form.scope = 'hardware'"
+                  @click="form.service = 'Hardware Procurement'"
                   class="p-3 rounded-xl border text-center transition-all"
-                  :class="form.scope === 'hardware' ? 'bg-brand-indigo border-brand-indigo text-white shadow-sm' : 'border-slate-700 bg-slate-800/80 text-slate-300 hover:border-slate-600'"
+                  :class="form.service === 'Hardware Procurement' ? 'bg-brand-indigo border-brand-indigo text-white shadow-sm' : 'border-slate-700 bg-slate-800/80 text-slate-300 hover:border-slate-600'"
                 >
                   Hardware Procurement
                 </button>
                 <button
                   type="button"
-                  @click="form.scope = 'networking'"
+                  @click="form.service = 'Network & Fibre'"
                   class="p-3 rounded-xl border text-center transition-all"
-                  :class="form.scope === 'networking' ? 'bg-brand-indigo border-brand-indigo text-white shadow-sm' : 'border-slate-700 bg-slate-800/80 text-slate-300 hover:border-slate-600'"
+                  :class="form.service === 'Network & Fibre' ? 'bg-brand-indigo border-brand-indigo text-white shadow-sm' : 'border-slate-700 bg-slate-800/80 text-slate-300 hover:border-slate-600'"
                 >
                   Network & Fibre
                 </button>
                 <button
                   type="button"
-                  @click="form.scope = 'security'"
+                  @click="form.service = 'CCTV & Access'"
                   class="p-3 rounded-xl border text-center transition-all"
-                  :class="form.scope === 'security' ? 'bg-brand-indigo border-brand-indigo text-white shadow-sm' : 'border-slate-700 bg-slate-800/80 text-slate-300 hover:border-slate-600'"
+                  :class="form.service === 'CCTV & Access' ? 'bg-brand-indigo border-brand-indigo text-white shadow-sm' : 'border-slate-700 bg-slate-800/80 text-slate-300 hover:border-slate-600'"
                 >
                   CCTV & Access
                 </button>
                 <button
                   type="button"
-                  @click="form.scope = 'maintenance'"
+                  @click="form.service = 'SLA Support'"
                   class="p-3 rounded-xl border text-center transition-all"
-                  :class="form.scope === 'maintenance' ? 'bg-brand-indigo border-brand-indigo text-white shadow-sm' : 'border-slate-700 bg-slate-800/80 text-slate-300 hover:border-slate-600'"
+                  :class="form.service === 'SLA Support' ? 'bg-brand-indigo border-brand-indigo text-white shadow-sm' : 'border-slate-700 bg-slate-800/80 text-slate-300 hover:border-slate-600'"
                 >
                   SLA Support
                 </button>
               </div>
             </div>
 
-            <!-- Step 2: Scale Selector -->
-            <div>
-              <label class="block text-xs font-semibold uppercase tracking-wider text-slate-300 mb-2.5">
-                2. Enterprise Scale
-              </label>
-              <div class="grid grid-cols-3 gap-2.5 text-xs font-medium">
-                <button
-                  type="button"
-                  @click="form.scale = 'small'"
-                  class="p-3 rounded-xl border text-center transition-all"
-                  :class="form.scale === 'small' ? 'bg-brand-indigo border-brand-indigo text-white shadow-sm' : 'border-slate-700 bg-slate-800/80 text-slate-300 hover:border-slate-600'"
-                >
-                  1 – 20 Users / Ports
-                </button>
-                <button
-                  type="button"
-                  @click="form.scale = 'mid'"
-                  class="p-3 rounded-xl border text-center transition-all"
-                  :class="form.scale === 'mid' ? 'bg-brand-indigo border-brand-indigo text-white shadow-sm' : 'border-slate-700 bg-slate-800/80 text-slate-300 hover:border-slate-600'"
-                >
-                  20 – 100 Users / Multi-room
-                </button>
-                <button
-                  type="button"
-                  @click="form.scale = 'enterprise'"
-                  class="p-3 rounded-xl border text-center transition-all"
-                  :class="form.scale === 'enterprise' ? 'bg-brand-indigo border-brand-indigo text-white shadow-sm' : 'border-slate-700 bg-slate-800/80 text-slate-300 hover:border-slate-600'"
-                >
-                  Enterprise 100+ / Multi-branch
-                </button>
-              </div>
-            </div>
-
-            <!-- Step 3: Contact Inputs -->
+            <!-- Step 2: Contact Inputs -->
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <label class="block text-xs text-slate-300 mb-1.5">Your Name <span class="text-red-400">*</span></label>
+                <input 
+                  v-model="form.name" 
+                  type="text" 
+                  required 
+                  placeholder="John Doe"
+                  class="w-full bg-slate-800/80 border border-slate-700 rounded-xl px-4 py-2.5 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-brand-indigo"
+                />
+              </div>
+              <div>
+                <label class="block text-xs text-slate-300 mb-1.5">Email Address <span class="text-red-400">*</span></label>
+                <input 
+                  v-model="form.email" 
+                  type="email" 
+                  required 
+                  placeholder="john@example.com"
+                  class="w-full bg-slate-800/80 border border-slate-700 rounded-xl px-4 py-2.5 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-brand-indigo"
+                />
+              </div>
+              <div>
+                <label class="block text-xs text-slate-300 mb-1.5">Phone Number</label>
+                <input 
+                  v-model="form.phone" 
+                  type="text" 
+                  placeholder="+254 700 000000"
+                  class="w-full bg-slate-800/80 border border-slate-700 rounded-xl px-4 py-2.5 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-brand-indigo"
+                />
+              </div>
               <div>
                 <label class="block text-xs text-slate-300 mb-1.5">Company / Institution Name</label>
                 <input 
                   v-model="form.company" 
                   type="text" 
-                  required 
                   placeholder="e.g. Apex Logistics Ltd"
-                  class="w-full bg-slate-800/80 border border-slate-700 rounded-xl px-4 py-2.5 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-brand-indigo"
-                />
-              </div>
-              <div>
-                <label class="block text-xs text-slate-300 mb-1.5">Phone or Email Address</label>
-                <input 
-                  v-model="form.contact" 
-                  type="text" 
-                  required 
-                  placeholder="phone or email"
                   class="w-full bg-slate-800/80 border border-slate-700 rounded-xl px-4 py-2.5 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-brand-indigo"
                 />
               </div>
             </div>
 
+            <!-- Step 3: Message -->
             <div>
-              <label class="block text-xs text-slate-300 mb-1.5">Optional Specifications / Device Quantities</label>
+              <label class="block text-xs text-slate-300 mb-1.5">Specifications / Details</label>
               <textarea 
-                v-model="form.details" 
+                v-model="form.message" 
                 rows="2" 
                 placeholder="Specific model preference, number of workstations, or building layout..."
                 class="w-full bg-slate-800/80 border border-slate-700 rounded-xl px-4 py-2.5 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-brand-indigo"
               ></textarea>
             </div>
 
+            <!-- Step 4: Security CAPTCHA -->
+            <div class="flex items-center gap-4 bg-slate-800/50 p-4 rounded-xl border border-slate-700">
+              <div class="flex-1">
+                <label class="block text-xs text-slate-300 mb-1.5">Security Question <span class="text-red-400">*</span></label>
+                <div class="text-sm text-white font-medium">What is {{ num1 }} + {{ num2 }}?</div>
+              </div>
+              <div class="w-24">
+                <input 
+                  v-model="form.captcha_answer" 
+                  type="number" 
+                  required 
+                  class="w-full bg-slate-800/80 border border-slate-700 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-brand-indigo text-center"
+                />
+              </div>
+            </div>
+            <div v-if="form.errors.captcha_answer" class="text-red-400 text-xs mt-1">{{ form.errors.captcha_answer }}</div>
+
             <button 
               type="submit" 
-              class="w-full bg-brand-indigo hover:bg-brand-hover text-white text-sm font-semibold py-3.5 px-6 rounded-xl shadow-lg shadow-brand-indigo/30 transition-all flex items-center justify-center gap-2"
+              :disabled="form.processing"
+              class="w-full bg-brand-indigo hover:bg-brand-hover text-white text-sm font-semibold py-3.5 px-6 rounded-xl shadow-lg shadow-brand-indigo/30 transition-all flex items-center justify-center gap-2 disabled:opacity-50"
             >
-              <span>Submit for Official Quotation</span>
-              <Send class="w-4 h-4" />
+              <span v-if="form.processing">Submitting...</span>
+              <span v-else>Submit for Official Quotation</span>
+              <Send v-if="!form.processing" class="w-4 h-4" />
             </button>
           </form>
         </div>

@@ -8,6 +8,17 @@ import HardwareSelector from '@/Components/HardwareSelector.vue';
 import ServicesSection from '@/Components/ServicesSection.vue';
 import QuoteEstimator from '@/Components/QuoteEstimator.vue';
 import TestimonialsSection from '@/Components/TestimonialsSection.vue';
+
+defineProps({
+  hardwareCategories: {
+    type: Array,
+    default: () => []
+  },
+  services: {
+    type: Array,
+    default: () => []
+  }
+});
 </script>
 
 <template>
@@ -24,10 +35,10 @@ import TestimonialsSection from '@/Components/TestimonialsSection.vue';
     <PartnerTicker />
 
     <!-- Interactive Solutions & Hardware Matrix -->
-    <HardwareSelector />
+    <HardwareSelector :hardwareCategories="hardwareCategories" />
 
     <!-- 5. ICT & Infrastructure Services Matrix -->
-    <ServicesSection />
+    <ServicesSection :services="services" />
 
     <TestimonialsSection />
 

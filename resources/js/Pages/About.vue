@@ -347,7 +347,7 @@ const journeyMilestones = [
               <ArrowRight class="w-4 h-4" />
             </Link>
             <Link 
-              href="/quote" 
+              href="/contact" 
               class="inline-flex items-center justify-center gap-2 bg-slate-800/80 hover:bg-slate-800 border border-slate-700 text-white text-xs font-semibold px-6 py-3.5 rounded-xl transition-all"
             >
               <span>Request Quote</span>

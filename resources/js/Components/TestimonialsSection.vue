@@ -26,7 +26,7 @@ const testimonials = [
 ];
 
 const impactStats = [
-  { value: "99.8%", label: "SLA Uptime Commitment" },
+  { value: "99.9%", label: "SLA Uptime Commitment" },
   { value: "500+", label: "Hardware Deployments" },
   { value: "24h", label: "Average RFP Response" },
   { value: "100%", label: "Direct OEM Sourced" }

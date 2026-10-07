@@ -1,12 +1,9 @@
 <script setup>
-import { ref } from 'vue';
+import { ref, computed } from 'vue';
 import { Head, Link } from '@inertiajs/vue3';
 import PublicLayout from '@/Layouts/PublicLayout.vue';
+import * as icons from 'lucide-vue-next';
 import { 
-  Network, 
-  ShieldAlert, 
-  Server, 
-  Wrench,
   ClipboardCheck,
   PenTool,
   CheckCircle,
@@ -14,38 +11,22 @@ import {
   ArrowRight
 } from 'lucide-vue-next';
 
+defineProps({
+  services: {
+    type: Array,
+    default: () => []
+  }
+});
+
 const activeService = ref(null);
 
 const toggleService = (title) => {
   activeService.value = activeService.value === title ? null : title;
 };
 
-const services = [
-  {
-    title: 'Structured Cabling & Fiber Optics',
-    description: 'Design and installation of robust structured cabling systems and high-speed fiber optic networks to ensure seamless data flow across your organization.',
-    icon: Network,
-    features: ['Cat6/Cat6A Copper Cabling', 'Single/Multi-mode Fiber', 'Server Room Design', 'Cable Auditing & Labeling']
-  },
-  {
-    title: 'Cybersecurity & Firewalls',
-    description: 'Enterprise-grade security solutions including firewall configuration, network monitoring, and threat prevention to protect your digital assets.',
-    icon: ShieldAlert,
-    features: ['Fortinet & Sophos Firewalls', 'VPN Setup', 'Intrusion Detection (IDS/IPS)', 'Endpoint Security']
-  },
-  {
-    title: 'IP Telephony & PABX Systems',
-    description: 'Modern business communication solutions, offering scalable and crystal-clear IP telephony for seamless internal and external connectivity.',
-    icon: Server,
-    features: ['VoIP Infrastructure', 'Call Center Solutions', 'SIP Trunking', 'Unified Communications']
-  },
-  {
-    title: 'SLA Maintenance & Support',
-    description: 'Dedicated Service Level Agreements ensuring your hardware and software infrastructure remains operational with minimal downtime.',
-    icon: Wrench,
-    features: ['24/7 Monitoring', 'Preventative Maintenance', 'On-Site Technician Support', 'Hardware Replacement']
-  }
-];
+const resolveIcon = (iconName) => {
+  return icons[iconName] || icons.Wrench;
+};
 
 const methodology = [
   { step: '01', title: 'Consultation & Audit', description: 'We start by evaluating your current infrastructure to identify bottlenecks and vulnerabilities.', icon: ClipboardCheck },
@@ -117,7 +98,7 @@ const methodology = [
               <div class="w-12 h-12 rounded-xl flex items-center justify-center transition-colors duration-300"
                 :class="activeService === service.title ? 'bg-brand-indigo text-white' : 'bg-indigo-50 text-brand-indigo group-hover:bg-indigo-100'"
               >
-                <component :is="service.icon" class="w-6 h-6" />
+                <component :is="resolveIcon(service.icon)" class="w-6 h-6" />
               </div>
               
               <!-- Chevron or Plus icon indicating expand -->
@@ -137,17 +118,17 @@ const methodology = [
               {{ service.title }}
             </h3>
             <p class="text-brand-slate text-sm leading-relaxed">
-              {{ service.description }}
+               {{ service.description }}
             </p>
             
             <!-- Expandable Features -->
             <div 
               class="overflow-hidden transition-all duration-500 ease-in-out"
-              :style="{ maxHeight: activeService === service.title ? '250px' : '0', opacity: activeService === service.title ? '1' : '0' }"
+              :style="{ maxHeight: activeService === service.title ? '300px' : '0', opacity: activeService === service.title ? '1' : '0' }"
             >
               <div class="pt-5 mt-5 border-t border-slate-100">
                 <ul class="space-y-3">
-                  <li v-for="feature in service.features" :key="feature" class="flex items-center gap-2.5 text-sm text-brand-slate font-medium">
+                  <li v-for="feature in service.highlights" :key="feature" class="flex items-center gap-2.5 text-sm text-brand-slate font-medium">
                     <div class="w-1.5 h-1.5 rounded-full bg-emerald-400"></div>
                     {{ feature }}
                   </li>
@@ -202,7 +183,7 @@ const methodology = [
           Partner with Dignity Traders today. Get a free consultation on structured cabling, network security, or SLA management for your institution.
         </p>
         <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
-          <Link href="/quote" class="inline-flex items-center gap-2 bg-brand-indigo hover:bg-brand-hover text-white text-sm font-bold px-8 py-3.5 rounded-xl transition-all shadow-lg hover:shadow-indigo-500/30">
+          <Link href="/contact" class="inline-flex items-center gap-2 bg-brand-indigo hover:bg-brand-hover text-white text-sm font-bold px-8 py-3.5 rounded-xl transition-all shadow-lg hover:shadow-indigo-500/30">
             <span>Request a Custom Quote</span>
             <ArrowRight class="w-4 h-4" />
           </Link>

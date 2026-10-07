@@ -23,7 +23,6 @@ const props = defineProps({
 const store = useProductStore();
 const activeCategory = ref(props.initialCategory || 'All');
 const searchQuery = ref('');
-const isCartOpen = ref(false);
 
 const allCategories = computed(() => {
   return ['All', ...props.dbCategories.map(c => c.name)];
@@ -103,7 +102,7 @@ onMounted(() => {
         
         <!-- Cart Trigger -->
         <button 
-          @click="isCartOpen = true"
+          @click="store.isCartOpen = true"
           class="relative flex items-center gap-2 bg-brand-indigo hover:bg-brand-hover text-white px-5 py-2.5 rounded-lg font-semibold transition-colors shadow-lg"
         >
           <ShoppingCart class="w-5 h-5" />
@@ -209,18 +208,20 @@ onMounted(() => {
                 </template>
               </Link>
               
-              <div class="p-5 flex flex-col flex-grow">
-                <div class="text-xs font-bold text-brand-indigo mb-2 uppercase tracking-wide">{{ product.category?.name }}</div>
+              <div class="p-4 flex flex-col flex-grow">
+                <div class="text-[10px] font-bold text-brand-indigo mb-1.5 uppercase tracking-wide">{{ product.category?.name }}</div>
                 <Link :href="`/shop/product/${product.slug}`" class="block">
-                  <h3 class="text-lg font-bold text-brand-navy leading-tight mb-2 hover:text-brand-indigo transition-colors">{{ product.name }}</h3>
+                  <h3 class="text-sm font-bold text-brand-navy leading-tight mb-2 hover:text-brand-indigo transition-colors">{{ product.name }}</h3>
                 </Link>
-                <p class="text-sm text-slate-500 mb-4 flex-grow line-clamp-2">{{ product.description }}</p>
+                <p class="text-xs text-slate-500 mb-4 flex-grow line-clamp-2">{{ product.description }}</p>
                 
-                <div class="flex items-center justify-between pt-4 border-t border-slate-100 mt-auto">
-                  <div class="text-xl font-extrabold text-brand-navy">${{ parseFloat(product.price).toFixed(2) }}</div>
+                <div class="flex items-center justify-between pt-3 border-t border-slate-100 mt-auto">
+                  <div class="text-lg font-extrabold text-brand-navy">
+                    {{ store.formatPrice(product.price) }}
+                  </div>
                   <button 
                     @click="store.addToCart(product)"
-                    class="bg-brand-navy hover:bg-brand-indigo text-white p-2.5 rounded-lg transition-colors shadow-md hover:shadow-brand-indigo/30"
+                    class="bg-brand-navy hover:bg-brand-indigo text-white p-2 rounded-lg transition-colors shadow-sm hover:shadow-brand-indigo/30"
                     title="Add to Cart"
                   >
                     <Plus class="w-4 h-4" />
@@ -232,11 +233,11 @@ onMounted(() => {
 
           <!-- Pagination -->
           <div v-if="totalPages > 1" class="flex justify-center mt-auto pt-8">
-            <div class="flex items-center gap-2 bg-white px-2 py-2 rounded-xl border border-slate-200 shadow-sm">
+            <div class="flex items-center gap-1 bg-white px-1 py-1 rounded-xl border border-slate-200 shadow-sm">
               <button 
                 @click="currentPage > 1 && currentPage--"
                 :disabled="currentPage === 1"
-                class="w-10 h-10 flex items-center justify-center rounded-lg font-bold text-sm transition-colors"
+                class="w-8 h-8 flex items-center justify-center rounded-lg font-bold text-xs transition-colors"
                 :class="currentPage === 1 ? 'text-slate-300 cursor-not-allowed' : 'text-slate-600 hover:bg-slate-100 hover:text-brand-navy'"
               >
                 &larr;
@@ -246,7 +247,7 @@ onMounted(() => {
                 v-for="page in totalPages" 
                 :key="page"
                 @click="currentPage = page"
-                class="w-10 h-10 flex items-center justify-center rounded-lg font-bold text-sm transition-colors"
+                class="w-8 h-8 flex items-center justify-center rounded-lg font-bold text-xs transition-colors"
                 :class="currentPage === page ? 'bg-brand-indigo text-white shadow-md shadow-brand-indigo/30' : 'text-slate-600 hover:bg-slate-100 hover:text-brand-navy'"
               >
                 {{ page }}
@@ -255,7 +256,7 @@ onMounted(() => {
               <button 
                 @click="currentPage < totalPages && currentPage++"
                 :disabled="currentPage === totalPages"
-                class="w-10 h-10 flex items-center justify-center rounded-lg font-bold text-sm transition-colors"
+                class="w-8 h-8 flex items-center justify-center rounded-lg font-bold text-xs transition-colors"
                 :class="currentPage === totalPages ? 'text-slate-300 cursor-not-allowed' : 'text-slate-600 hover:bg-slate-100 hover:text-brand-navy'"
               >
                 &rarr;
@@ -267,73 +268,7 @@ onMounted(() => {
       </div>
     </section>
 
-    <!-- Slide-over Cart Panel -->
-    <div v-if="isCartOpen" class="fixed inset-0 z-50 overflow-hidden">
-      <!-- Backdrop -->
-      <div class="absolute inset-0 bg-slate-900/60 backdrop-blur-sm transition-opacity" @click="isCartOpen = false"></div>
-      
-      <!-- Panel -->
-      <div class="absolute inset-y-0 right-0 w-full max-w-md bg-white shadow-2xl flex flex-col transform transition-transform duration-300">
-        <div class="flex items-center justify-between p-6 border-b border-slate-100 bg-slate-50">
-          <h2 class="text-xl font-bold text-brand-navy flex items-center gap-2">
-            <ShoppingCart class="w-5 h-5 text-brand-indigo" />
-            Your Request Cart
-          </h2>
-          <button @click="isCartOpen = false" class="text-slate-400 hover:text-slate-600 transition">
-            <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-            </svg>
-          </button>
-        </div>
 
-        <div class="flex-grow overflow-y-auto p-6">
-          <div v-if="store.cart.length === 0" class="h-full flex flex-col items-center justify-center text-slate-400 space-y-4">
-            <ShoppingCart class="w-16 h-16 opacity-20" />
-            <p>Your cart is empty.</p>
-            <button @click="isCartOpen = false" class="text-brand-indigo font-bold text-sm hover:underline">Continue Shopping</button>
-          </div>
-
-          <div v-else class="space-y-6">
-            <div v-for="item in store.cart" :key="item.id" class="flex gap-4 p-4 rounded-xl border border-slate-100 bg-white shadow-sm">
-              <div class="w-16 h-16 rounded-lg bg-slate-100 shrink-0 flex items-center justify-center text-xs font-bold text-slate-300 overflow-hidden">
-                <img v-if="item.images && item.images.length > 0" :src="item.images.find(i => i.is_primary)?.image_path || item.images[0].image_path" class="w-full h-full object-cover" />
-                <span v-else>Img</span>
-              </div>
-              <div class="flex-grow">
-                <h4 class="text-sm font-bold text-brand-navy mb-1 leading-tight">{{ item.name }}</h4>
-                <div class="text-xs text-slate-500 mb-2">${{ parseFloat(item.price).toFixed(2) }}</div>
-                
-                <div class="flex items-center justify-between">
-                  <div class="flex items-center border border-slate-200 rounded-lg overflow-hidden">
-                    <button @click="store.updateQuantity(item.id, item.quantity - 1)" class="w-7 h-7 flex items-center justify-center bg-slate-50 hover:bg-slate-100 text-slate-600 transition" :disabled="item.quantity <= 1">
-                      <Minus class="w-3 h-3" />
-                    </button>
-                    <div class="w-8 text-center text-xs font-semibold">{{ item.quantity }}</div>
-                    <button @click="store.updateQuantity(item.id, item.quantity + 1)" class="w-7 h-7 flex items-center justify-center bg-slate-50 hover:bg-slate-100 text-slate-600 transition">
-                      <Plus class="w-3 h-3" />
-                    </button>
-                  </div>
-                  <button @click="store.removeFromCart(item.id)" class="text-red-400 hover:text-red-600 p-1 transition">
-                    <Trash2 class="w-4 h-4" />
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div v-if="store.cart.length > 0" class="p-6 border-t border-slate-100 bg-slate-50">
-          <div class="flex justify-between items-center mb-6">
-            <span class="text-slate-600 font-medium">Estimated Total</span>
-            <span class="text-2xl font-extrabold text-brand-navy">${{ store.cartTotal.toFixed(2) }}</span>
-          </div>
-          <button class="w-full bg-brand-indigo hover:bg-brand-hover text-white py-3.5 rounded-xl font-bold shadow-lg shadow-brand-indigo/30 transition-all flex items-center justify-center gap-2">
-            Proceed to Quote Request
-            <ArrowRight class="w-4 h-4" />
-          </button>
-        </div>
-      </div>
-    </div>
 
   </PublicLayout>
 </template>

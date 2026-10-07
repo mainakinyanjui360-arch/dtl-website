@@ -40,13 +40,12 @@ const increaseQty = () => {
   quantity.value++;
 };
 
-const isCartOpen = ref(false);
+
 
 const handleAddToCart = () => {
   for (let i = 0; i < quantity.value; i++) {
     store.addToCart(props.product);
   }
-  isCartOpen.value = true;
 };
 </script>
 
@@ -56,16 +55,30 @@ const handleAddToCart = () => {
   <PublicLayout>
     <!-- Breadcrumbs -->
     <div class="bg-slate-50 border-b border-slate-200 py-4">
-      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center gap-2 text-sm text-slate-500">
-        <Link href="/shop" class="hover:text-brand-indigo flex items-center gap-1">
-          <ArrowLeft class="w-4 h-4" /> Back to Shop
-        </Link>
-        <span>/</span>
-        <Link :href="`/shop?category=${encodeURIComponent(product.category?.name)}`" class="hover:text-brand-indigo">
-          {{ product.category?.name }}
-        </Link>
-        <span>/</span>
-        <span class="text-brand-navy font-semibold truncate">{{ product.name }}</span>
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between">
+        <div class="flex items-center gap-2 text-sm text-slate-500">
+          <Link href="/shop" class="hover:text-brand-indigo flex items-center gap-1">
+            <ArrowLeft class="w-4 h-4" /> Back to Shop
+          </Link>
+          <span>/</span>
+          <Link :href="`/shop?category=${encodeURIComponent(product.category?.name)}`" class="hover:text-brand-indigo">
+            {{ product.category?.name }}
+          </Link>
+          <span>/</span>
+          <span class="text-brand-navy font-semibold truncate">{{ product.name }}</span>
+        </div>
+        
+        <!-- Cart Trigger -->
+        <button 
+          @click="store.isCartOpen = true"
+          class="relative flex items-center gap-2 bg-white px-4 py-2 rounded-xl shadow-sm border border-slate-200 text-brand-navy hover:text-brand-indigo font-bold transition-all"
+        >
+          <ShoppingCart class="w-4 h-4" />
+          <span class="text-sm">View Cart</span>
+          <span v-if="store.cartItemCount > 0" class="absolute -top-1.5 -right-1.5 w-5 h-5 bg-emerald-500 rounded-full flex items-center justify-center text-[10px] text-white font-bold border-2 border-white">
+            {{ store.cartItemCount }}
+          </span>
+        </button>
       </div>
     </div>
 
@@ -110,7 +123,9 @@ const handleAddToCart = () => {
               <h1 class="text-2xl font-extrabold text-brand-navy leading-tight">{{ product.name }}</h1>
               
               <div class="flex items-center gap-4 mt-4">
-                <span class="text-2xl font-extrabold text-emerald-600">${{ parseFloat(product.price).toFixed(2) }}</span>
+                <span class="text-2xl font-extrabold text-emerald-600">
+                  {{ store.formatPrice(product.price) }}
+                </span>
                 <div 
                   class="flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold"
                   :class="product.stock ? 'bg-emerald-50 text-emerald-600 border border-emerald-100' : 'bg-blue-50 text-blue-600 border border-blue-100'"
@@ -123,7 +138,7 @@ const handleAddToCart = () => {
             </div>
 
             <!-- Short Description -->
-            <div class="text-slate-600 text-sm leading-relaxed mb-8 border-b border-slate-100 pb-8 whitespace-pre-line">
+            <div class="text-slate-600 text-sm leading-relaxed mb-8 border-b border-slate-100 pb-8 whitespace-pre-line line-clamp-4">
               {{ product.description }}
             </div>
 
@@ -143,10 +158,11 @@ const handleAddToCart = () => {
                 
                 <button 
                   @click="handleAddToCart"
-                  class="flex-1 flex items-center justify-center gap-2 bg-brand-indigo hover:bg-brand-hover text-white h-12 rounded-xl font-bold shadow-lg shadow-brand-indigo/30 transition-all"
+                  class="flex-1 flex items-center justify-center gap-2 text-white h-12 rounded-xl font-bold shadow-lg transition-all"
+                  :class="product.allow_checkout ? 'bg-emerald-600 hover:bg-emerald-700 shadow-emerald-600/30' : 'bg-brand-indigo hover:bg-brand-hover shadow-brand-indigo/30'"
                 >
                   <ShoppingCart class="w-5 h-5" />
-                  Add to Quote
+                  {{ product.allow_checkout ? 'Add to Cart' : 'Add to Cart' }}
                 </button>
               </div>
             </div>
@@ -180,7 +196,7 @@ const handleAddToCart = () => {
           <!-- Column 1: Description -->
           <div class="p-8 lg:p-10">
             <h3 class="text-lg font-bold text-brand-navy mb-6">Product Description</h3>
-            <div class="prose max-w-none text-slate-600 whitespace-pre-line text-sm">
+            <div class="prose max-w-none text-slate-600 whitespace-pre-line text-sm max-h-80 overflow-y-auto pr-4" style="scrollbar-width: thin; scrollbar-color: #cbd5e1 transparent;">
               {{ product.description }}
               
               <p class="mt-8 pt-4 border-t border-slate-100 text-xs text-slate-500 italic">This product is sourced directly from OEM channels ensuring 100% authenticity and full compliance with enterprise infrastructure standards.</p>
@@ -190,7 +206,11 @@ const handleAddToCart = () => {
           <!-- Column 2: Specifications -->
           <div class="p-8 lg:p-10 bg-slate-50/30">
             <h3 class="text-lg font-bold text-brand-navy mb-6">Specifications</h3>
-            <div class="prose max-w-none text-slate-600 text-sm">
+            <div class="prose max-w-none text-slate-600 text-sm max-h-80 overflow-y-auto pr-4" style="scrollbar-width: thin; scrollbar-color: #cbd5e1 transparent;">
+              <div v-if="product.specifications" class="whitespace-pre-line mb-6 pb-6 border-b border-slate-200">
+                {{ product.specifications }}
+              </div>
+              
               <table class="w-full text-left border-collapse border border-slate-200 bg-white">
                 <tbody>
                   <tr class="border-b border-slate-200">
@@ -207,6 +227,15 @@ const handleAddToCart = () => {
                   </tr>
                 </tbody>
               </table>
+              
+              <div v-if="product.spec_sheet_path" class="mt-6 pt-6 border-t border-slate-200">
+                <a :href="product.spec_sheet_path" download class="flex items-center justify-center gap-2 w-full bg-slate-100 hover:bg-slate-200 text-brand-navy font-bold py-3 px-4 rounded-xl transition-colors border border-slate-200 shadow-sm group">
+                  <svg class="w-5 h-5 text-brand-indigo group-hover:scale-110 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                  </svg>
+                  Download PDF Datasheet
+                </a>
+              </div>
             </div>
           </div>
 
@@ -258,9 +287,11 @@ const handleAddToCart = () => {
               </Link>
               
               <div class="flex items-center justify-between pt-3 border-t border-slate-100 mt-auto">
-                <div class="text-lg font-extrabold text-brand-navy">${{ parseFloat(rel.price).toFixed(2) }}</div>
+                <div class="text-lg font-extrabold text-brand-navy">
+                  {{ store.formatPrice(rel.price) }}
+                </div>
                 <button 
-                  @click.prevent="store.addToCart(rel); isCartOpen = true;"
+                  @click.prevent="store.addToCart(rel);"
                   class="bg-brand-navy hover:bg-brand-indigo text-white p-2 rounded-lg transition-colors shadow-md hover:shadow-brand-indigo/30"
                   title="Add to Quote"
                 >
@@ -274,72 +305,7 @@ const handleAddToCart = () => {
 
     </section>
 
-    <!-- Slide-over Cart Panel -->
-    <div v-if="isCartOpen" class="fixed inset-0 z-50 overflow-hidden">
-      <!-- Backdrop -->
-      <div class="absolute inset-0 bg-slate-900/60 backdrop-blur-sm transition-opacity" @click="isCartOpen = false"></div>
-      
-      <!-- Panel -->
-      <div class="absolute inset-y-0 right-0 w-full max-w-md bg-white shadow-2xl flex flex-col transform transition-transform duration-300">
-        <div class="flex items-center justify-between p-6 border-b border-slate-100 bg-slate-50">
-          <h2 class="text-xl font-bold text-brand-navy flex items-center gap-2">
-            <ShoppingCart class="w-5 h-5 text-brand-indigo" />
-            Your Request Cart
-          </h2>
-          <button @click="isCartOpen = false" class="text-slate-400 hover:text-slate-600 transition">
-            <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-            </svg>
-          </button>
-        </div>
 
-        <div class="flex-grow overflow-y-auto p-6">
-          <div v-if="store.cart.length === 0" class="h-full flex flex-col items-center justify-center text-slate-400 space-y-4">
-            <ShoppingCart class="w-16 h-16 opacity-20" />
-            <p>Your cart is empty.</p>
-            <button @click="isCartOpen = false" class="text-brand-indigo font-bold text-sm hover:underline">Continue Shopping</button>
-          </div>
-
-          <div v-else class="space-y-6">
-            <div v-for="item in store.cart" :key="item.id" class="flex gap-4 p-4 rounded-xl border border-slate-100 bg-white shadow-sm">
-              <div class="w-16 h-16 rounded-lg bg-slate-100 shrink-0 flex items-center justify-center text-xs font-bold text-slate-300 overflow-hidden">
-                <img v-if="item.images && item.images.length > 0" :src="item.images.find(i => i.is_primary)?.image_path || item.images[0].image_path" class="w-full h-full object-cover" />
-                <span v-else>Img</span>
-              </div>
-              <div class="flex-grow">
-                <h4 class="text-sm font-bold text-brand-navy mb-1 leading-tight">{{ item.name }}</h4>
-                <div class="text-xs text-slate-500 mb-2">${{ parseFloat(item.price).toFixed(2) }}</div>
-                
-                <div class="flex items-center justify-between">
-                  <div class="flex items-center border border-slate-200 rounded-lg overflow-hidden">
-                    <button @click="store.updateQuantity(item.id, item.quantity - 1)" class="w-7 h-7 flex items-center justify-center bg-slate-50 hover:bg-slate-100 text-slate-600 transition" :disabled="item.quantity <= 1">
-                      <Minus class="w-3 h-3" />
-                    </button>
-                    <div class="w-8 text-center text-xs font-semibold">{{ item.quantity }}</div>
-                    <button @click="store.updateQuantity(item.id, item.quantity + 1)" class="w-7 h-7 flex items-center justify-center bg-slate-50 hover:bg-slate-100 text-slate-600 transition">
-                      <Plus class="w-3 h-3" />
-                    </button>
-                  </div>
-                  <button @click="store.removeFromCart(item.id)" class="text-red-400 hover:text-red-600 p-1 transition">
-                    <Trash2 class="w-4 h-4" />
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div v-if="store.cart.length > 0" class="p-6 border-t border-slate-100 bg-slate-50">
-          <div class="flex justify-between items-center mb-6">
-            <span class="text-slate-600 font-medium">Estimated Total</span>
-            <span class="text-2xl font-extrabold text-brand-navy">${{ store.cartTotal.toFixed(2) }}</span>
-          </div>
-          <button class="w-full bg-brand-indigo hover:bg-brand-hover text-white py-3.5 rounded-xl font-bold shadow-lg shadow-brand-indigo/30 transition-all flex items-center justify-center gap-2">
-            Proceed to Quote Request
-          </button>
-        </div>
-      </div>
-    </div>
 
   </PublicLayout>
 </template>

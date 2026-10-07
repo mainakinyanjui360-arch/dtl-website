@@ -10,7 +10,7 @@ class Product extends Model
     use HasUuids;
 
     protected $fillable = [
-        'category_id', 'name', 'slug', 'description', 'price', 'stock', 'is_active'
+        'category_id', 'name', 'slug', 'description', 'specifications', 'price', 'currency', 'stock', 'allow_checkout', 'is_active', 'spec_sheet_path'
     ];
 
     public function category()
@@ -21,5 +21,10 @@ class Product extends Model
     public function images()
     {
         return $this->hasMany(ProductImage::class);
+    }
+
+    public function tags()
+    {
+        return $this->belongsToMany(Tag::class);
     }
 }

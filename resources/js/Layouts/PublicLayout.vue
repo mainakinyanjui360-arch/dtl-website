@@ -1,8 +1,10 @@
 <script setup>
 import { ref } from 'vue';
 import { Link } from '@inertiajs/vue3';
-import { Phone, Mail, MapPin, ChevronRight, ChevronDown, MessageSquare, ShieldCheck, ArrowRight } from 'lucide-vue-next';
+import { Phone, Mail, MapPin, ChevronRight, ChevronDown, MessageSquare, ShieldCheck, ArrowRight, ShoppingCart, Minus, Plus, Trash2 } from 'lucide-vue-next';
+import { useProductStore } from '@/Stores/useProductStore';
 
+const productStore = useProductStore();
 const isShopMenuOpen = ref(false);
 
 const shopCategories = [
@@ -23,19 +25,31 @@ const shopCategories = [
         <div class="flex items-center space-x-6">
           <span class="flex items-center gap-1.5 hover:text-white transition">
             <Phone class="w-3.5 h-3.5 text-brand-indigo" />
-            +254 723 788354
+            {{ $page.props.globalSettings?.contact_phone || '+254 723 788354' }}
           </span>
           <span class="flex items-center gap-1.5 hover:text-white transition">
             <Mail class="w-3.5 h-3.5 text-brand-indigo" />
-            info@dignityafrica.co.ke
+            {{ $page.props.globalSettings?.contact_email || 'info@dignityafrica.co.ke' }}
           </span>
           <span class="hidden md:flex items-center gap-1.5">
             <MapPin class="w-3.5 h-3.5 text-brand-indigo" />
-            Muthaiga Square, Ground Floor, Nairobi
+            {{ $page.props.globalSettings?.contact_address || 'Muthaiga Square, Ground Floor, Nairobi' }}
           </span>
         </div>
-        <div class="flex items-center gap-4">
-          <a href="https://wa.me/254723788354" target="_blank" class="flex items-center gap-1.5 text-emerald-400 hover:text-emerald-300 font-medium transition">
+        <div class="flex items-center gap-6">
+          <div class="flex items-center bg-slate-800 rounded-lg p-0.5 border border-slate-700">
+            <button 
+              @click="productStore.selectedCurrency = 'USD'"
+              class="px-2.5 py-1 text-[10px] font-bold rounded-md transition-all"
+              :class="productStore.selectedCurrency === 'USD' ? 'bg-brand-indigo text-white shadow-sm' : 'text-slate-400 hover:text-slate-200'"
+            >USD</button>
+            <button 
+              @click="productStore.selectedCurrency = 'KES'"
+              class="px-2.5 py-1 text-[10px] font-bold rounded-md transition-all"
+              :class="productStore.selectedCurrency === 'KES' ? 'bg-brand-indigo text-white shadow-sm' : 'text-slate-400 hover:text-slate-200'"
+            >KSH</button>
+          </div>
+          <a :href="'https://wa.me/' + ($page.props.globalSettings?.contact_phone?.replace(/\D/g, '') || '254723788354')" target="_blank" class="flex items-center gap-1.5 text-emerald-400 hover:text-emerald-300 font-medium transition">
             <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
             WhatsApp Support
           </a>
@@ -91,15 +105,15 @@ const shopCategories = [
                     <div class="space-y-5 text-sm mt-8 font-medium">
                       <div class="flex items-center gap-3 hover:text-indigo-200 transition">
                         <Phone class="w-5 h-5 text-white" />
-                        <span>0723 788 354</span>
+                        <span>{{ $page.props.globalSettings?.contact_phone || '0723 788 354' }}</span>
                       </div>
                       <div class="flex items-center gap-3 hover:text-indigo-200 transition">
                         <MessageSquare class="w-5 h-5 text-white" />
-                        <span>0723 788 354</span>
+                        <span>{{ $page.props.globalSettings?.contact_phone || '0723 788 354' }}</span>
                       </div>
                       <div class="flex items-center gap-3 hover:text-indigo-200 transition">
                         <Mail class="w-5 h-5 text-white" />
-                        <span class="text-xs">info@dignityafrica.co.ke</span>
+                        <span class="text-xs">{{ $page.props.globalSettings?.contact_email || 'info@dignityafrica.co.ke' }}</span>
                       </div>
                     </div>
                   </div>
@@ -147,7 +161,7 @@ const shopCategories = [
 
         <!-- Header CTA -->
         <div class="hidden sm:flex items-center gap-4">
-          <Link href="/quote" class="inline-flex items-center gap-2 bg-brand-indigo hover:bg-brand-hover text-white text-sm font-medium px-5 py-2.5 rounded-lg shadow-sm shadow-brand-indigo/30 transition-all hover:shadow-md">
+          <Link href="/contact" class="inline-flex items-center gap-2 bg-brand-indigo hover:bg-brand-hover text-white text-sm font-medium px-5 py-2.5 rounded-lg shadow-sm shadow-brand-indigo/30 transition-all hover:shadow-md">
             <span>Request a Quote</span>
             <ChevronRight class="w-4 h-4" />
           </Link>
@@ -181,7 +195,6 @@ const shopCategories = [
           <ul class="space-y-2.5 text-sm text-slate-400">
             <li><Link href="/experience" class="hover:text-white transition">Experience</Link></li>
             <li><Link href="/projects" class="hover:text-white transition">Projects</Link></li>
-            <li><Link href="/team" class="hover:text-white transition">Our Team</Link></li>
             <li><Link href="/faqs" class="hover:text-white transition">FAQs</Link></li>
             <li><Link href="/customers" class="hover:text-white transition">Customers</Link></li>
           </ul>
@@ -200,10 +213,9 @@ const shopCategories = [
         <div>
           <h4 class="text-white font-semibold text-sm mb-4 tracking-wider uppercase">Contact</h4>
           <p class="text-sm text-slate-400 leading-relaxed">
-            Muthaiga Square, Ground Floor<br>
-            Nairobi, Kenya<br>
-            <span class="block mt-2 text-white font-medium">+254 723 788354</span>
-            <span class="text-slate-400">info@dignityafrica.co.ke</span>
+            <span class="whitespace-pre-line">{{ $page.props.globalSettings?.contact_address || 'Muthaiga Square, Ground Floor\nNairobi, Kenya' }}</span><br>
+            <span class="block mt-2 text-white font-medium">{{ $page.props.globalSettings?.contact_phone || '+254 723 788354' }}</span>
+            <span class="text-slate-400">{{ $page.props.globalSettings?.contact_email || 'info@dignityafrica.co.ke' }}</span>
           </p>
         </div>
       </div>
@@ -213,5 +225,99 @@ const shopCategories = [
         <p>Enterprise ICT Infrastructure & Procurement</p>
       </div>
     </footer>
+
+    <!-- Global Slide-over Cart Panel -->
+    <div v-if="productStore.isCartOpen" class="fixed inset-0 z-[100] overflow-hidden">
+      <!-- Backdrop -->
+      <div class="absolute inset-0 bg-slate-900/60 backdrop-blur-sm transition-opacity" @click="productStore.isCartOpen = false"></div>
+      
+      <!-- Panel -->
+      <div class="absolute inset-y-0 right-0 w-full max-w-md bg-white shadow-2xl flex flex-col transform transition-transform duration-300">
+        <div class="flex items-center justify-between p-6 border-b border-slate-100 bg-slate-50">
+          <h2 class="text-xl font-bold text-brand-navy flex items-center gap-2">
+            <ShoppingCart class="w-5 h-5 text-brand-indigo" />
+            Your Request Cart
+          </h2>
+          <button @click="productStore.isCartOpen = false" class="text-slate-400 hover:text-slate-600 transition">
+            <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
+
+        <div class="flex-grow overflow-y-auto p-6">
+          <div v-if="productStore.cart.length === 0" class="h-full flex flex-col items-center justify-center text-slate-400 space-y-4">
+            <ShoppingCart class="w-16 h-16 opacity-20" />
+            <p>Your cart is empty.</p>
+            <button @click="isGlobalCartOpen = false" class="text-brand-indigo font-bold text-sm hover:underline">Continue Shopping</button>
+          </div>
+
+          <div v-else class="space-y-4">
+            <div v-for="item in productStore.cart" :key="item.id" class="flex gap-3 p-3 rounded-xl border border-slate-100 bg-white shadow-sm">
+              <div class="w-14 h-14 rounded-lg bg-slate-100 shrink-0 flex items-center justify-center text-[10px] font-bold text-slate-300 overflow-hidden">
+                <img v-if="item.images && item.images.length > 0" :src="item.images.find(i => i.is_primary)?.image_path || item.images[0].image_path" class="w-full h-full object-cover" />
+                <span v-else>Img</span>
+              </div>
+              <div class="flex-grow">
+                <h4 class="text-xs font-semibold text-brand-navy mb-0.5 leading-tight">{{ item.name }}</h4>
+                <div class="text-[11px] text-slate-500 mb-2 font-medium">
+                  {{ productStore.formatPrice(item.price) }}
+                </div>
+                
+                <div class="flex items-center justify-between">
+                  <div class="flex items-center border border-slate-200 rounded-md overflow-hidden">
+                    <button @click="productStore.updateQuantity(item.id, item.quantity - 1)" class="w-6 h-6 flex items-center justify-center bg-slate-50 hover:bg-slate-100 text-slate-600 transition" :disabled="item.quantity <= 1">
+                      <Minus class="w-2.5 h-2.5" />
+                    </button>
+                    <div class="w-6 text-center text-[11px] font-semibold">{{ item.quantity }}</div>
+                    <button @click="productStore.updateQuantity(item.id, item.quantity + 1)" class="w-6 h-6 flex items-center justify-center bg-slate-50 hover:bg-slate-100 text-slate-600 transition">
+                      <Plus class="w-2.5 h-2.5" />
+                    </button>
+                  </div>
+                  <button @click="productStore.removeFromCart(item.id)" class="text-red-400 hover:text-red-600 p-1 transition">
+                    <Trash2 class="w-3.5 h-3.5" />
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div v-if="productStore.cart.length > 0" class="p-6 border-t border-slate-100 bg-slate-50">
+          <div class="flex items-center justify-between mb-4">
+            <span class="text-[10px] text-slate-500 font-semibold uppercase tracking-wider">Currency</span>
+            <div class="flex items-center bg-slate-200 rounded-lg p-0.5 border border-slate-300">
+              <button 
+                @click="productStore.selectedCurrency = 'USD'"
+                class="px-2.5 py-1 text-[11px] font-bold rounded-md transition-all"
+                :class="productStore.selectedCurrency === 'USD' ? 'bg-white text-brand-navy shadow-sm' : 'text-slate-500 hover:text-slate-700'"
+              >USD</button>
+              <button 
+                @click="productStore.selectedCurrency = 'KES'"
+                class="px-2.5 py-1 text-[11px] font-bold rounded-md transition-all"
+                :class="productStore.selectedCurrency === 'KES' ? 'bg-white text-brand-navy shadow-sm' : 'text-slate-500 hover:text-slate-700'"
+              >KSH</button>
+            </div>
+          </div>
+          <div class="flex justify-between items-center mb-5">
+            <span class="text-sm text-slate-600 font-medium">Estimated Total</span>
+            <span class="text-xl font-bold text-brand-navy">{{ productStore.formattedCartTotal }}</span>
+          </div>
+          
+          <Link 
+            :href="route('checkout')" 
+            @click="productStore.isCartOpen = false"
+            class="w-full bg-brand-indigo hover:bg-brand-hover text-white py-3 rounded-lg font-bold text-sm shadow-md shadow-brand-indigo/30 transition-all flex items-center justify-center gap-2"
+          >
+            {{ productStore.cartTotalUSD > ($page.props.globalSettings?.checkout_limit_usd || 5000) ? 'Request a Quote' : 'Proceed to Checkout' }}
+            <ArrowRight class="w-4 h-4" />
+          </Link>
+          <div v-if="productStore.cartTotalUSD > ($page.props.globalSettings?.checkout_limit_usd || 5000)" class="text-center mt-3 text-[10px] text-slate-500 font-medium uppercase tracking-wide">
+            Over online limit. Quote required.
+          </div>
+        </div>
+      </div>
+    </div>
+
   </div>
 </template>
