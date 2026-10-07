@@ -35,6 +35,10 @@ Route::get('/contact', function () {
     return Inertia::render('Contact');
 })->name('contact');
 
+Route::get('/partners', function () {
+    return Inertia::render('Partners');
+})->name('partners');
+
 Route::get('/faqs', function () {
     return Inertia::render('Faqs');
 })->name('faqs');

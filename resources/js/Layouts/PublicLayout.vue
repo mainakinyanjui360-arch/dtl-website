@@ -196,7 +196,7 @@ const shopCategories = [
             <li><Link href="/experience" class="hover:text-white transition">Experience</Link></li>
             <li><Link href="/projects" class="hover:text-white transition">Projects</Link></li>
             <li><Link href="/faqs" class="hover:text-white transition">FAQs</Link></li>
-            <li><Link href="/customers" class="hover:text-white transition">Customers</Link></li>
+            <li><Link href="/partners" class="hover:text-white transition">Customers</Link></li>
           </ul>
         </div>
 
