@@ -29,14 +29,12 @@ class OrderController extends Controller
             'notes' => 'nullable|string',
         ]);
 
-        // Format cart into message
-        $message = "SHOPPING CART QUOTE REQUEST\n";
-        $message .= "===========================\n\n";
+        // Format cart into an HTML table message
+        $message = "<h3>Shopping Cart Quote Request</h3>";
+        $message .= "<p><strong>Shipping Address:</strong><br>" . nl2br(e($validated['address'])) . "</p>";
         
-        $message .= "SHIPPING ADDRESS:\n";
-        $message .= $validated['address'] . "\n\n";
-        
-        $message .= "ITEMS:\n";
+        $message .= "<table border='1' cellpadding='10' cellspacing='0' style='width: 100%; border-collapse: collapse; border-color: #cbd5e1; text-align: left;'>";
+        $message .= "<tr style='background-color: #f8fafc;'><th>Item</th><th>Qty</th><th>Unit Price</th><th>Subtotal</th></tr>";
         
         $totalUsd = 0;
         foreach ($validated['cart'] as $item) {
@@ -45,17 +43,23 @@ class OrderController extends Controller
             $subtotal = $price * $qty;
             $totalUsd += $subtotal;
             
-            $message .= "Item: " . ($item['name'] ?? 'Unknown') . "\n";
-            $message .= "Qty: " . $qty . "\n";
-            $message .= "Price: $" . number_format($price, 2) . "\n";
-            $message .= "Subtotal: $" . number_format($subtotal, 2) . "\n";
-            $message .= "---------------------------\n";
+            $message .= "<tr>";
+            $message .= "<td>" . e($item['name'] ?? 'Unknown') . "</td>";
+            $message .= "<td>" . $qty . "</td>";
+            $message .= "<td>$" . number_format($price, 2) . "</td>";
+            $message .= "<td>$" . number_format($subtotal, 2) . "</td>";
+            $message .= "</tr>";
         }
         
-        $message .= "\nESTIMATED TOTAL: $" . number_format($totalUsd, 2) . "\n";
+        $message .= "<tr style='background-color: #f1f5f9; font-weight: bold;'>";
+        $message .= "<td colspan='3' style='text-align: right;'>Estimated Total:</td>";
+        $message .= "<td>$" . number_format($totalUsd, 2) . "</td>";
+        $message .= "</tr>";
+        $message .= "</table>";
         
         if (!empty($validated['notes'])) {
-            $message .= "\nADDITIONAL NOTES:\n" . $validated['notes'];
+            $message .= "<h4>Additional Notes:</h4>";
+            $message .= "<p>" . nl2br(e($validated['notes'])) . "</p>";
         }
 
         $quote = QuoteRequest::create([
@@ -77,6 +81,6 @@ class OrderController extends Controller
             // Ignore email failure for user flow
         }
 
-        return redirect()->route('shop')->with('success', 'Your quote request has been submitted successfully. We will email you a formal proposal shortly.');
+        return back()->with('success', 'Your quote request has been submitted successfully. We will email you a formal proposal shortly.');
     }
 }

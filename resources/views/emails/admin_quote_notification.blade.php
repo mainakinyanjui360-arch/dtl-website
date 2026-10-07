@@ -14,7 +14,11 @@
         <li><strong>Interested Service:</strong> {{ $quote->service }}</li>
     </ul>
     <h3>Message / Requirements:</h3>
-    <p>{{ $quote->message }}</p>
+    @if($quote->service === 'Cart Checkout Quote')
+        <div>{!! $quote->message !!}</div>
+    @else
+        <p style="white-space: pre-wrap;">{{ $quote->message }}</p>
+    @endif
     <br>
     <p>You can view and manage this request from the Admin Dashboard.</p>
 </body>

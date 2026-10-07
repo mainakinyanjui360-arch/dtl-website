@@ -1,11 +1,12 @@
 <script setup>
 import { Head, useForm, Link } from '@inertiajs/vue3';
-import { onMounted } from 'vue';
+import { onMounted, ref } from 'vue';
 import PublicLayout from '@/Layouts/PublicLayout.vue';
 import { useProductStore } from '@/Stores/useProductStore';
 import { ArrowLeft, Send, CheckCircle2, ShoppingCart } from 'lucide-vue-next';
 
 const store = useProductStore();
+const isSubmitted = ref(false);
 
 const form = useForm({
   name: '',
@@ -32,6 +33,8 @@ const submitCheckout = () => {
     preserveScroll: true,
     onSuccess: () => {
       store.cart = []; // Empty the cart
+      form.reset();
+      isSubmitted.value = true;
     }
   });
 };
@@ -55,7 +58,21 @@ const submitCheckout = () => {
           </Link>
         </div>
 
-        <div v-if="store.cart.length === 0" class="bg-white rounded-2xl border border-slate-200 shadow-sm p-16 text-center">
+        <div v-if="isSubmitted" class="bg-white rounded-2xl border border-slate-200 shadow-sm p-16 text-center max-w-2xl mx-auto">
+          <CheckCircle2 class="w-16 h-16 text-emerald-500 mx-auto mb-4" />
+          <h2 class="text-2xl font-bold text-brand-navy mb-3">Quote Request Submitted Successfully!</h2>
+          <p class="text-slate-500 mb-8 leading-relaxed">Thank you for your request. Our enterprise sales team has received your order summary and will email you a formal proposal with shipping costs and lead times shortly.</p>
+          <div class="flex flex-col sm:flex-row justify-center gap-4">
+            <Link :href="route('shop')" class="inline-flex justify-center items-center gap-2 bg-brand-indigo text-white font-bold px-6 py-3 rounded-xl shadow-md hover:bg-brand-hover transition">
+              Back to Shop
+            </Link>
+            <Link :href="route('home')" class="inline-flex justify-center items-center gap-2 bg-slate-100 text-slate-700 font-bold px-6 py-3 rounded-xl hover:bg-slate-200 transition">
+              Return Home
+            </Link>
+          </div>
+        </div>
+
+        <div v-else-if="store.cart.length === 0" class="bg-white rounded-2xl border border-slate-200 shadow-sm p-16 text-center">
           <ShoppingCart class="w-16 h-16 text-slate-300 mx-auto mb-4" />
           <h2 class="text-xl font-bold text-brand-navy mb-2">Your Cart is Empty</h2>
           <p class="text-slate-500 mb-6">Browse our products and add items to your cart to request a quote.</p>
@@ -173,9 +190,25 @@ const submitCheckout = () => {
           <!-- Right Column: Order Summary -->
           <div class="lg:col-span-5">
             <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden sticky top-24">
-              <div class="p-4 bg-slate-50 border-b border-slate-200">
-                <h2 class="text-sm font-bold text-brand-navy">Order Summary</h2>
-                <p class="text-[10px] text-slate-500 mt-0.5">{{ store.cartItemCount }} Items in your request</p>
+              <div class="p-4 bg-slate-50 border-b border-slate-200 flex items-center justify-between">
+                <div>
+                  <h2 class="text-sm font-bold text-brand-navy">Order Summary</h2>
+                  <p class="text-[10px] text-slate-500 mt-0.5">{{ store.cartItemCount }} Items in your request</p>
+                </div>
+                <div class="flex items-center bg-white rounded-lg p-0.5 border border-slate-200 shadow-sm">
+                  <button 
+                    type="button"
+                    @click="store.selectedCurrency = 'USD'"
+                    class="px-2 py-0.5 text-[10px] font-bold rounded-md transition-all"
+                    :class="store.selectedCurrency === 'USD' ? 'bg-brand-indigo text-white shadow' : 'text-slate-500 hover:text-brand-navy hover:bg-slate-50'"
+                  >USD</button>
+                  <button 
+                    type="button"
+                    @click="store.selectedCurrency = 'KES'"
+                    class="px-2 py-0.5 text-[10px] font-bold rounded-md transition-all"
+                    :class="store.selectedCurrency === 'KES' ? 'bg-brand-indigo text-white shadow' : 'text-slate-500 hover:text-brand-navy hover:bg-slate-50'"
+                  >KSH</button>
+                </div>
               </div>
               
               <div class="p-4 max-h-[400px] overflow-y-auto divide-y divide-slate-100">
@@ -195,23 +228,6 @@ const submitCheckout = () => {
               </div>
               
               <div class="p-4 bg-slate-50 border-t border-slate-200">
-                <div class="flex items-center justify-between mb-4 pb-4 border-b border-slate-200">
-                  <span class="text-[10px] text-slate-500 font-semibold uppercase tracking-wider">Currency</span>
-                  <div class="flex items-center bg-white rounded-lg p-0.5 border border-slate-200 shadow-sm">
-                    <button 
-                      type="button"
-                      @click="store.selectedCurrency = 'USD'"
-                      class="px-3 py-1 text-[11px] font-bold rounded-md transition-all"
-                      :class="store.selectedCurrency === 'USD' ? 'bg-brand-indigo text-white shadow' : 'text-slate-500 hover:text-brand-navy hover:bg-slate-50'"
-                    >USD</button>
-                    <button 
-                      type="button"
-                      @click="store.selectedCurrency = 'KES'"
-                      class="px-3 py-1 text-[11px] font-bold rounded-md transition-all"
-                      :class="store.selectedCurrency === 'KES' ? 'bg-brand-indigo text-white shadow' : 'text-slate-500 hover:text-brand-navy hover:bg-slate-50'"
-                    >KSH</button>
-                  </div>
-                </div>
 
                 <div class="flex justify-between items-center mb-2 text-xs">
                   <span class="text-slate-600 font-medium">Subtotal</span>

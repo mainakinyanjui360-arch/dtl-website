@@ -1,11 +1,12 @@
 <script setup>
 import { ref } from 'vue';
 import { Link } from '@inertiajs/vue3';
-import { Phone, Mail, MapPin, ChevronRight, ChevronDown, MessageSquare, ShieldCheck, ArrowRight, ShoppingCart, Minus, Plus, Trash2 } from 'lucide-vue-next';
+import { Phone, Mail, MapPin, ChevronRight, ChevronDown, MessageSquare, ShieldCheck, ArrowRight, ShoppingCart, Minus, Plus, Trash2, Menu, X } from 'lucide-vue-next';
 import { useProductStore } from '@/Stores/useProductStore';
 
 const productStore = useProductStore();
 const isShopMenuOpen = ref(false);
+const isMobileMenuOpen = ref(false);
 
 const shopCategories = [
   'Fiber Optic Products',
@@ -37,18 +38,7 @@ const shopCategories = [
           </span>
         </div>
         <div class="flex items-center gap-6">
-          <div class="flex items-center bg-slate-800 rounded-lg p-0.5 border border-slate-700">
-            <button 
-              @click="productStore.selectedCurrency = 'USD'"
-              class="px-2.5 py-1 text-[10px] font-bold rounded-md transition-all"
-              :class="productStore.selectedCurrency === 'USD' ? 'bg-brand-indigo text-white shadow-sm' : 'text-slate-400 hover:text-slate-200'"
-            >USD</button>
-            <button 
-              @click="productStore.selectedCurrency = 'KES'"
-              class="px-2.5 py-1 text-[10px] font-bold rounded-md transition-all"
-              :class="productStore.selectedCurrency === 'KES' ? 'bg-brand-indigo text-white shadow-sm' : 'text-slate-400 hover:text-slate-200'"
-            >KSH</button>
-          </div>
+
           <a :href="'https://wa.me/' + ($page.props.globalSettings?.contact_phone?.replace(/\D/g, '') || '254723788354')" target="_blank" class="flex items-center gap-1.5 text-emerald-400 hover:text-emerald-300 font-medium transition">
             <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
             WhatsApp Support
@@ -159,14 +149,53 @@ const shopCategories = [
           <Link href="/contact" class="hover:text-brand-indigo transition" :class="{ 'text-brand-indigo font-semibold': $page.url.startsWith('/contact') }">Contact</Link>
         </nav>
 
-        <!-- Header CTA -->
-        <div class="hidden sm:flex items-center gap-4">
-          <Link href="/contact" class="inline-flex items-center gap-2 bg-brand-indigo hover:bg-brand-hover text-white text-sm font-medium px-5 py-2.5 rounded-lg shadow-sm shadow-brand-indigo/30 transition-all hover:shadow-md">
-            <span>Request a Quote</span>
-            <ChevronRight class="w-4 h-4" />
-          </Link>
+        <!-- Header CTA and Mobile Menu Toggle -->
+        <div class="flex items-center gap-4">
+          <div class="hidden sm:flex items-center gap-4">
+            <Link href="/contact" class="inline-flex items-center gap-2 bg-brand-indigo hover:bg-brand-hover text-white text-sm font-medium px-5 py-2.5 rounded-lg shadow-sm shadow-brand-indigo/30 transition-all hover:shadow-md">
+              <span>Request a Quote</span>
+              <ChevronRight class="w-4 h-4" />
+            </Link>
+          </div>
+          
+          <!-- Mobile Menu Toggle Button -->
+          <button 
+            @click="isMobileMenuOpen = !isMobileMenuOpen"
+            class="lg:hidden p-2 text-slate-600 hover:text-brand-indigo transition focus:outline-none"
+          >
+            <Menu v-if="!isMobileMenuOpen" class="w-6 h-6" />
+            <X v-else class="w-6 h-6" />
+          </button>
         </div>
       </div>
+      
+      <!-- Mobile Navigation Menu -->
+      <transition
+        enter-active-class="transition duration-200 ease-out"
+        enter-from-class="opacity-0 -translate-y-2"
+        enter-to-class="opacity-100 translate-y-0"
+        leave-active-class="transition duration-150 ease-in"
+        leave-from-class="opacity-100 translate-y-0"
+        leave-to-class="opacity-0 -translate-y-2"
+      >
+        <div v-if="isMobileMenuOpen" class="lg:hidden absolute top-20 left-0 w-full bg-white border-b border-slate-200 shadow-lg">
+          <nav class="flex flex-col p-4 space-y-2">
+            <Link @click="isMobileMenuOpen = false" href="/" class="px-4 py-3 text-base font-medium text-slate-700 hover:bg-slate-50 hover:text-brand-indigo rounded-lg transition" :class="{ 'text-brand-indigo bg-slate-50': $page.url === '/' }">Home</Link>
+            <Link @click="isMobileMenuOpen = false" href="/shop" class="px-4 py-3 text-base font-medium text-slate-700 hover:bg-slate-50 hover:text-brand-indigo rounded-lg transition" :class="{ 'text-brand-indigo bg-slate-50': $page.url.startsWith('/shop') }">Shop</Link>
+            <Link @click="isMobileMenuOpen = false" href="/services" class="px-4 py-3 text-base font-medium text-slate-700 hover:bg-slate-50 hover:text-brand-indigo rounded-lg transition" :class="{ 'text-brand-indigo bg-slate-50': $page.url.startsWith('/services') }">Services</Link>
+            <Link @click="isMobileMenuOpen = false" href="/partners" class="px-4 py-3 text-base font-medium text-slate-700 hover:bg-slate-50 hover:text-brand-indigo rounded-lg transition" :class="{ 'text-brand-indigo bg-slate-50': $page.url.startsWith('/partners') }">Partners</Link>
+            <Link @click="isMobileMenuOpen = false" href="/about" class="px-4 py-3 text-base font-medium text-slate-700 hover:bg-slate-50 hover:text-brand-indigo rounded-lg transition" :class="{ 'text-brand-indigo bg-slate-50': $page.url.startsWith('/about') }">About Us</Link>
+            <Link @click="isMobileMenuOpen = false" href="/contact" class="px-4 py-3 text-base font-medium text-slate-700 hover:bg-slate-50 hover:text-brand-indigo rounded-lg transition" :class="{ 'text-brand-indigo bg-slate-50': $page.url.startsWith('/contact') }">Contact</Link>
+            
+            <div class="pt-4 mt-2 border-t border-slate-100 sm:hidden">
+              <Link @click="isMobileMenuOpen = false" href="/contact" class="flex items-center justify-center w-full gap-2 bg-brand-indigo text-white text-base font-medium px-5 py-3 rounded-lg shadow-sm">
+                <span>Request a Quote</span>
+                <ChevronRight class="w-4 h-4" />
+              </Link>
+            </div>
+          </nav>
+        </div>
+      </transition>
     </header>
 
     <!-- Page Body Slot -->
