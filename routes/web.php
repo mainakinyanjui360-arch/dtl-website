@@ -11,9 +11,6 @@ Route::get('/', function () {
     ]);
 })->name('home');
 
-Route::get('/hardware', function () {
-    return Inertia::render('Hardware');
-})->name('hardware');
 
 Route::get('/services', function () {
     return Inertia::render('Services', [

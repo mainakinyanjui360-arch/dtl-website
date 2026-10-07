@@ -193,7 +193,7 @@ const shopCategories = [
         <div>
           <h4 class="text-white font-semibold text-sm mb-4 tracking-wider uppercase">Discover</h4>
           <ul class="space-y-2.5 text-sm text-slate-400">
-            <li><Link href="/experience" class="hover:text-white transition">Experience</Link></li>
+            <li><Link href="/about" class="hover:text-white transition">Experience</Link></li>
             <li><Link href="/projects" class="hover:text-white transition">Projects</Link></li>
             <li><Link href="/faqs" class="hover:text-white transition">FAQs</Link></li>
             <li><Link href="/partners" class="hover:text-white transition">Customers</Link></li>
