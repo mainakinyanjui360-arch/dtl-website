@@ -38,5 +38,12 @@ class DatabaseSeeder extends Seeder
                 'slug' => Str::slug($category),
             ]);
         }
+
+        $this->call([
+            ProcurementCardSeeder::class,
+            ProjectSeeder::class,
+            ServiceSeeder::class,
+            SettingSeeder::class,
+        ]);
     }
 }
