@@ -1,12 +1,38 @@
 <script setup>
-import { ref } from 'vue';
-import { Link } from '@inertiajs/vue3';
-import { Phone, Mail, MapPin, ChevronRight, ChevronDown, MessageSquare, ShieldCheck, ArrowRight, ShoppingCart, Minus, Plus, Trash2, Menu, X } from 'lucide-vue-next';
+import { ref, onMounted, onUnmounted } from 'vue';
+import { router, Link } from '@inertiajs/vue3';
+import { Phone, Mail, MapPin, ChevronRight, ChevronDown, MessageSquare, ShieldCheck, ArrowRight, ShoppingCart, Minus, Plus, Trash2, Menu, X, ArrowUp, Loader2 } from 'lucide-vue-next';
 import { useProductStore } from '@/Stores/useProductStore';
 
 const productStore = useProductStore();
 const isShopMenuOpen = ref(false);
 const isMobileMenuOpen = ref(false);
+const showScrollToTop = ref(false);
+const isNavigating = ref(false);
+
+const handleScroll = () => {
+  showScrollToTop.value = window.scrollY > 300;
+};
+
+const scrollToTop = () => {
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+};
+
+onMounted(() => {
+  window.addEventListener('scroll', handleScroll);
+  
+  router.on('start', () => {
+    isNavigating.value = true;
+  });
+  
+  router.on('finish', () => {
+    isNavigating.value = false;
+  });
+});
+
+onUnmounted(() => {
+  window.removeEventListener('scroll', handleScroll);
+});
 
 const shopCategories = [
   'Fiber Optic Products',
@@ -347,6 +373,42 @@ const shopCategories = [
         </div>
       </div>
     </div>
-
   </div>
+    
+    <!-- Scroll to Top Button -->
+    <transition
+      enter-active-class="transition ease-out duration-300"
+      enter-from-class="opacity-0 translate-y-4"
+      enter-to-class="opacity-100 translate-y-0"
+      leave-active-class="transition ease-in duration-200"
+      leave-from-class="opacity-100 translate-y-0"
+      leave-to-class="opacity-0 translate-y-4"
+    >
+      <button 
+        v-show="showScrollToTop" 
+        @click="scrollToTop"
+        class="fixed bottom-6 right-6 z-40 bg-brand-navy hover:bg-brand-indigo text-white p-3 rounded-full shadow-lg shadow-brand-navy/20 transition-all group"
+        aria-label="Scroll to top"
+      >
+        <ArrowUp class="w-5 h-5 group-hover:-translate-y-0.5 transition-transform" />
+      </button>
+    </transition>
+
+    <!-- Global Navigation Loader -->
+    <transition
+      enter-active-class="transition ease-out duration-200"
+      enter-from-class="opacity-0"
+      enter-to-class="opacity-100"
+      leave-active-class="transition ease-in duration-200"
+      leave-from-class="opacity-100"
+      leave-to-class="opacity-0"
+    >
+      <div v-if="isNavigating" class="fixed inset-0 z-[9999] bg-white/80 backdrop-blur-sm flex flex-col items-center justify-center">
+        <div class="relative">
+          <div class="absolute inset-0 bg-brand-indigo/20 blur-xl rounded-full"></div>
+          <Loader2 class="w-12 h-12 text-brand-indigo animate-spin relative z-10" />
+        </div>
+        <div class="mt-4 text-sm font-bold text-brand-navy tracking-widest uppercase animate-pulse">Loading...</div>
+      </div>
+    </transition>
 </template>

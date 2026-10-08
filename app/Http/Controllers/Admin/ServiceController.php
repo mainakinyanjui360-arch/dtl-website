@@ -75,6 +75,10 @@ class ServiceController extends Controller
 
     public function destroy(Service $service)
     {
+        if (!auth()->user()->hasPermission('delete_services')) {
+            return back()->with('error', 'You do not have permission to delete services.');
+        }
+
         $service->delete();
         return back()->with('success', 'Service deleted successfully.');
     }

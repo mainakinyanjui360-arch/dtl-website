@@ -16,11 +16,14 @@ class DatabaseSeeder extends Seeder
     public function run(): void
     {
         // 1. Seed Admin User
-        User::create([
-            'name' => 'Admin User',
-            'email' => 'admin@dignityafrica.co.ke',
-            'password' => Hash::make('password123'),
-        ]);
+        User::updateOrCreate(
+            ['email' => 'admin@dignityafrica.co.ke'],
+            [
+                'name' => 'Admin User',
+                'password' => Hash::make('password123'),
+                'is_super_admin' => true,
+            ]
+        );
 
         // 2. Seed Default Categories
         $categories = [

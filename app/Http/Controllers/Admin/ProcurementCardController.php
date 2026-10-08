@@ -85,6 +85,10 @@ class ProcurementCardController extends Controller
 
     public function destroy(ProcurementCard $procurement_card)
     {
+        if (!auth()->user()->hasPermission('delete_products') && !auth()->user()->hasPermission('delete_services')) {
+            return back()->with('error', 'You do not have permission to delete procurement cards.');
+        }
+
         $procurement_card->delete();
         return back()->with('success', 'Card deleted successfully.');
     }

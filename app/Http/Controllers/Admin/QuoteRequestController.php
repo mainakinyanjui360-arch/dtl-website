@@ -18,6 +18,10 @@ class QuoteRequestController extends Controller
 
     public function destroy(QuoteRequest $quote)
     {
+        if (!auth()->user()->hasPermission('delete_quotes')) {
+            return back()->with('error', 'You do not have permission to delete quote requests.');
+        }
+
         $quote->delete();
         return back()->with('success', 'Quote request deleted successfully.');
     }

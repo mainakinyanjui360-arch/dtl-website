@@ -135,6 +135,9 @@ Route::middleware('auth')->group(function () {
         Route::post('/inquiries/{inquiry}/reply', [\App\Http\Controllers\Admin\InquiryController::class, 'reply'])->name('admin.inquiries.reply');
         Route::delete('/inquiries/{inquiry}', [\App\Http\Controllers\Admin\InquiryController::class, 'destroy'])->name('admin.inquiries.destroy');
 
+        // Admin Users (Team)
+        Route::resource('users', \App\Http\Controllers\Admin\UserController::class)->names('admin.users')->except(['show']);
+
         Route::post('/categories', function(Illuminate\Http\Request $request) {
             $validated = $request->validate([
                 'name' => 'required|string|max:255|unique:categories,name'
@@ -146,7 +149,12 @@ Route::middleware('auth')->group(function () {
             return back()->with('success', 'Category created.');
         })->name('admin.categories.store');
 
-        Route::delete('/categories/{category}', function(\App\Models\Category $category) {
+        Route::delete('/categories/{category}', function(Illuminate\Http\Request $request, \App\Models\Category $category) {
+            /** @var \App\Models\User $user */
+            $user = $request->user();
+            if (!$user->hasPermission('delete_taxonomy')) {
+                return back()->with('error', 'You do not have permission to delete categories.');
+            }
             $category->delete();
             return back()->with('success', 'Category deleted.');
         })->name('admin.categories.destroy');
@@ -162,7 +170,12 @@ Route::middleware('auth')->group(function () {
             return back()->with('success', 'Tag created.');
         })->name('admin.tags.store');
 
-        Route::delete('/tags/{tag}', function(\App\Models\Tag $tag) {
+        Route::delete('/tags/{tag}', function(Illuminate\Http\Request $request, \App\Models\Tag $tag) {
+            /** @var \App\Models\User $user */
+            $user = $request->user();
+            if (!$user->hasPermission('delete_taxonomy')) {
+                return back()->with('error', 'You do not have permission to delete tags.');
+            }
             $tag->delete();
             return back()->with('success', 'Tag deleted.');
         })->name('admin.tags.destroy');

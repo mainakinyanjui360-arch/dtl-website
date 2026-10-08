@@ -1,6 +1,6 @@
 <script setup>
 import { Link, usePage } from '@inertiajs/vue3';
-import { Package, LayoutGrid, LogOut, Layers, Wrench, Briefcase, Settings as SettingsIcon, MessageSquare, MessageCircle, CheckCircle, XCircle, Info, X } from 'lucide-vue-next';
+import { Package, LayoutGrid, LogOut, Layers, Wrench, Briefcase, Settings as SettingsIcon, MessageSquare, MessageCircle, CheckCircle, XCircle, Info, X, Users } from 'lucide-vue-next';
 import { computed, ref, watch } from 'vue';
 
 const page = usePage();
@@ -93,7 +93,12 @@ const closeFlash = () => {
               {{ $page.props.pendingInquiriesCount }}
             </span>
           </Link>
-          <Link href="/shop/admin/settings" class="flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-medium transition-all"
+          <Link v-if="$page.props.auth.user.is_super_admin" href="/shop/admin/users" class="flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-medium transition-all"
+            :class="currentUrl.startsWith('/shop/admin/users') ? 'bg-brand-indigo text-white shadow-md shadow-brand-indigo/20' : 'text-slate-400 hover:bg-slate-800 hover:text-white'">
+            <Users class="w-5 h-5" />
+            Team / Admins
+          </Link>
+          <Link v-if="$page.props.auth.user.is_super_admin || ($page.props.auth.user.permissions && $page.props.auth.user.permissions.includes('manage_settings'))" href="/shop/admin/settings" class="flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-medium transition-all"
             :class="currentUrl.startsWith('/shop/admin/settings') ? 'bg-brand-indigo text-white shadow-md shadow-brand-indigo/20' : 'text-slate-400 hover:bg-slate-800 hover:text-white'">
             <SettingsIcon class="w-5 h-5" />
             Settings

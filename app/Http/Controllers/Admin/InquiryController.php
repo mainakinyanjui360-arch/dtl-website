@@ -42,6 +42,10 @@ class InquiryController extends Controller
 
     public function destroy(Inquiry $inquiry)
     {
+        if (!auth()->user()->hasPermission('delete_quotes')) {
+            return back()->with('error', 'You do not have permission to delete inquiries.');
+        }
+
         $inquiry->delete();
         return back()->with('success', 'Inquiry deleted successfully.');
     }

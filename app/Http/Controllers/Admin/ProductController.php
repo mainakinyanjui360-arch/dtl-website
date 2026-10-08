@@ -210,6 +210,10 @@ class ProductController extends Controller
 
     public function destroy(\App\Models\Product $product)
     {
+        if (!auth()->user()->hasPermission('delete_products')) {
+            return back()->with('error', 'You do not have permission to delete products.');
+        }
+
         $product->delete();
         return redirect()->route('admin.products.index')->with('success', 'Product deleted successfully.');
     }

@@ -23,6 +23,8 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'is_super_admin',
+        'permissions',
     ];
 
     /**
@@ -45,6 +47,22 @@ class User extends Authenticatable
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'is_super_admin' => 'boolean',
+            'permissions' => 'array',
         ];
+    }
+
+    /**
+     * Check if user has a specific permission.
+     * Super admins have all permissions.
+     */
+    public function hasPermission($permission): bool
+    {
+        if ($this->is_super_admin) {
+            return true;
+        }
+
+        $perms = $this->permissions ?? [];
+        return in_array($permission, $perms);
     }
 }

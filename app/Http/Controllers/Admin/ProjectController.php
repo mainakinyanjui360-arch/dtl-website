@@ -85,6 +85,10 @@ class ProjectController extends Controller
 
     public function destroy(Project $project)
     {
+        if (!auth()->user()->hasPermission('delete_projects')) {
+            return back()->with('error', 'You do not have permission to delete projects.');
+        }
+
         if ($project->image) {
             Storage::disk('public')->delete(str_replace('/storage/', '', $project->image));
         }

@@ -103,7 +103,7 @@ const deleteProduct = () => {
           </Link>
           <h1 class="text-xl font-bold text-brand-navy">Edit Product: {{ product.name }}</h1>
         </div>
-        <button type="button" @click="deleteProduct" class="text-red-500 hover:text-red-600 font-bold text-sm flex items-center gap-2 transition-colors">
+        <button v-if="$page.props.auth.user.is_super_admin || ($page.props.auth.user.permissions && $page.props.auth.user.permissions.includes('delete_products'))" type="button" @click="deleteProduct" class="text-red-500 hover:text-red-600 font-bold text-sm flex items-center gap-2 transition-colors">
           <Trash2 class="w-4 h-4" />
           Delete Product
         </button>
